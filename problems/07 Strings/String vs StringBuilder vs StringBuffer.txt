@@ -1,0 +1,160 @@
+==========================================
+String vs StringBuilder vs StringBuffer
+==========================================
+
+1. WHAT IS THE TOPIC?
+=====================
+In Java, there are three main ways to work with text data:
+- String: Immutable character sequence
+- StringBuilder: Mutable character sequence (not thread-safe)
+- StringBuffer: Mutable character sequence (thread-safe)
+
+
+2. STRING (Immutable)
+=====================
+- Once created, cannot be modified
+- Any modification creates a NEW object in memory
+- Stored in String Pool (special memory area in heap)
+- Thread-safe by default (because immutable)
+
+Example:
+    String str = "Hello";
+    str = str + " World";  // Creates NEW object, old "Hello" remains in memory
+
+Memory Impact:
+    String s = "A";
+    s = s + "B";  // "A" still in memory
+    s = s + "C";  // "A" and "AB" still in memory
+    s = s + "D";  // "A", "AB", "ABC" still in memory
+    
+    Result: 4 objects created for simple concatenation!
+
+
+3. STRINGBUILDER (Mutable, Not Thread-Safe)
+============================================
+- Can be modified without creating new objects
+- Uses resizable array internally
+- NOT synchronized (faster but not thread-safe)
+- Best for single-threaded operations
+
+Example:
+    StringBuilder sb = new StringBuilder("Hello");
+    sb.append(" World");  // Modifies SAME object
+
+Memory Impact:
+    StringBuilder sb = new StringBuilder("A");
+    sb.append("B");  // Same object modified
+    sb.append("C");  // Same object modified
+    sb.append("D");  // Same object modified
+    
+    Result: Only 1 object in memory!
+
+
+4. STRINGBUFFER (Mutable, Thread-Safe)
+=======================================
+- Can be modified without creating new objects
+- Uses resizable array internally
+- Synchronized (thread-safe but slower than StringBuilder)
+- Best for multi-threaded operations
+
+Example:
+    StringBuffer sb = new StringBuffer("Hello");
+    sb.append(" World");  // Modifies SAME object, thread-safe
+
+Memory Impact:
+    Same as StringBuilder - only 1 object
+    But with synchronization overhead
+
+
+5. MEMORY COMPARISON
+====================
+
+Operation: Concatenate 1000 strings
+
+String:
+    - Creates 1000 new objects
+    - Memory: ~1000 objects in heap
+    - Time: O(n²) due to copying
+
+StringBuilder:
+    - Modifies 1 object (may resize internal array)
+    - Memory: 1 object + resized array
+    - Time: O(n)
+
+StringBuffer:
+    - Same as StringBuilder
+    - Memory: 1 object + resized array
+    - Time: O(n) but slower due to synchronization
+
+
+6. PERFORMANCE COMPARISON
+==========================
+
+                String      StringBuilder   StringBuffer
+Mutability      Immutable   Mutable         Mutable
+Thread-Safe     Yes         No              Yes
+Performance     Slowest     Fastest         Fast
+Memory Usage    High        Low             Low
+Use Case        Few changes Many changes    Multi-threaded
+
+
+7. WHEN TO USE WHAT?
+====================
+
+Use STRING when:
+    - Value won't change
+    - Need thread-safety with immutability
+    - Working with string literals
+    - Example: final String API_KEY = "abc123";
+
+Use STRINGBUILDER when:
+    - Frequent modifications needed
+    - Single-threaded environment
+    - Performance is critical
+    - Example: Building dynamic SQL queries, JSON, HTML
+
+Use STRINGBUFFER when:
+    - Frequent modifications needed
+    - Multi-threaded environment
+    - Thread-safety is required
+    - Example: Logging in multi-threaded applications
+
+
+8. CODE EXAMPLE - MEMORY IMPACT
+================================
+
+// BAD: Using String for concatenation
+String result = "";
+for (int i = 0; i < 1000; i++) {
+    result += i;  // Creates 1000 new String objects!
+}
+
+// GOOD: Using StringBuilder
+StringBuilder sb = new StringBuilder();
+for (int i = 0; i < 1000; i++) {
+    sb.append(i);  // Modifies same object
+}
+String result = sb.toString();
+
+
+9. INTERNAL MEMORY STRUCTURE
+=============================
+
+String:
+    [char array] -> Immutable, fixed size
+    "Hello" -> ['H','e','l','l','o']
+
+StringBuilder/StringBuffer:
+    [char array with extra capacity] -> Mutable, resizable
+    Initial: capacity = 16
+    "Hello" -> ['H','e','l','l','o', _, _, _, _, _, _, _, _, _, _, _]
+    When full, creates new array with double capacity
+
+
+10. KEY TAKEAWAY
+================
+- String: Use for constants and rarely changing text
+- StringBuilder: Use for string manipulation in single thread (MOST COMMON)
+- StringBuffer: Use for string manipulation in multiple threads (RARE)
+
+Memory Rule: Avoid String concatenation in loops - use StringBuilder!
