@@ -1,0 +1,21 @@
+GET ith BIT:
+
+Create mask: 1 << i
+AND with number: n & (1 << i)
+Check if result is 0 or not
+Example: Get bit 2 of 5 (0101) → Result: 1
+
+SET ith BIT:
+
+Create mask: 1 << i
+OR with number: n | (1 << i)
+Sets bit to 1 (if already 1, stays 1)
+Example: Set bit 1 of 5 (0101) → 7 (0111)
+
+CLEAR ith BIT:
+
+Create mask: 1 << i
+Invert mask: ~(1 << i)
+AND with number: n & ~(1 << i)
+Clears bit to 0 (if already 0, stays 0)
+Example: Clear bit 2 of 5 (0101) → 1 (0001)
